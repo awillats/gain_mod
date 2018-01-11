@@ -21,32 +21,45 @@
  * DefaultGUIModel with a custom GUI.
  */
 
-#include "plugin-template.h"
+#include "gain_mod.h"
 #include <iostream>
 #include <main_window.h>
 
 extern "C" Plugin::Object*
 createRTXIPlugin(void)
 {
-  return new PluginTemplate();
+  return new GainMod();
 }
 
 static DefaultGUIModel::variable_t vars[] = {
   {
-    "GUI label", "Tooltip description",
+    "Gain", "g in y = g*x + b",
     DefaultGUIModel::PARAMETER | DefaultGUIModel::DOUBLE,
   },
   {
-    "A State", "Tooltip description", DefaultGUIModel::STATE,
+    "Bias", "b in y = g*x + b",
+    DefaultGUIModel::PARAMETER | DefaultGUIModel::DOUBLE,
   },
+
+  {
+    "x-in", "x in y = g*x + b",
+    DefaultGUIModel::INPUT,
+  },
+
+  {
+    "y-out", "y in y = g*x + b",
+    DefaultGUIModel::OUTPUT ,
+  },
+
+
 };
 
 static size_t num_vars = sizeof(vars) / sizeof(DefaultGUIModel::variable_t);
 
-PluginTemplate::PluginTemplate(void)
-  : DefaultGUIModel("PluginTemplate with Custom GUI", ::vars, ::num_vars)
+GainMod::GainMod(void)
+  : DefaultGUIModel("GainMod with Custom GUI", ::vars, ::num_vars)
 {
-  setWhatsThis("<p><b>PluginTemplate:</b><br>QWhatsThis description.</p>");
+  setWhatsThis("<p><b>GainMod:</b><br>QWhatsThis description.</p>");
   DefaultGUIModel::createGUI(vars,
                              num_vars); // this is required to create the GUI
   customizeGUI();
@@ -58,35 +71,43 @@ PluginTemplate::PluginTemplate(void)
   QTimer::singleShot(0, this, SLOT(resizeMe()));
 }
 
-PluginTemplate::~PluginTemplate(void)
+GainMod::~GainMod(void)
 {
 }
 
 void
-PluginTemplate::execute(void)
+GainMod::execute(void)
 {
+  output(0) = input(0)*g+b;
   return;
 }
 
 void
-PluginTemplate::initParameters(void)
+GainMod::initParameters(void)
 {
   some_parameter = 0;
   some_state = 0;
+  g=1;
+  b=0;
 }
 
 void
-PluginTemplate::update(DefaultGUIModel::update_flags_t flag)
+GainMod::update(DefaultGUIModel::update_flags_t flag)
 {
   switch (flag) {
     case INIT:
       period = RT::System::getInstance()->getPeriod() * 1e-6; // ms
-      setParameter("GUI label", some_parameter);
-      setState("A State", some_state);
+      setParameter("Gain", g);
+      setParameter("Bias", b);
+
       break;
 
     case MODIFY:
       some_parameter = getParameter("GUI label").toDouble();
+		
+	  g = getParameter("Gain").toDouble();
+	  b = getParameter("Bias").toDouble();
+
       break;
 
     case UNPAUSE:
@@ -105,7 +126,7 @@ PluginTemplate::update(DefaultGUIModel::update_flags_t flag)
 }
 
 void
-PluginTemplate::customizeGUI(void)
+GainMod::customizeGUI(void)
 {
   QGridLayout* customlayout = DefaultGUIModel::getLayout();
 
@@ -126,11 +147,11 @@ PluginTemplate::customizeGUI(void)
 
 // functions designated as Qt slots are implemented as regular C++ functions
 void
-PluginTemplate::aBttn_event(void)
+GainMod::aBttn_event(void)
 {
 }
 
 void
-PluginTemplate::bBttn_event(void)
+GainMod::bBttn_event(void)
 {
 }

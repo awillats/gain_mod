@@ -23,14 +23,14 @@
 
 #include <default_gui_model.h>
 
-class PluginTemplate : public DefaultGUIModel
+class GainMod : public DefaultGUIModel
 {
 
   Q_OBJECT
 
 public:
-  PluginTemplate(void);
-  virtual ~PluginTemplate(void);
+  GainMod(void);
+  virtual ~GainMod(void);
 
   void execute(void);
   void createGUI(DefaultGUIModel::variable_t*, int);
@@ -43,6 +43,9 @@ private:
   double some_parameter;
   double some_state;
   double period;
+
+  double g;
+  double b;
 
   void initParameters();
 

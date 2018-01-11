@@ -1,9 +1,9 @@
-PLUGIN_NAME = plugin_template
+PLUGIN_NAME = gain_mod
 
-HEADERS = plugin-template.h
+HEADERS = gain_mod.h
 
-SOURCES = plugin-template.cpp\
-          moc_plugin-template.cpp\
+SOURCES = gain_mod.cpp\
+          moc_gain_mod.cpp\
 
 LIBS = 
 
